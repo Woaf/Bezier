@@ -72,6 +72,7 @@ protected:
 	bool draw_polygon = false;
 	bool draw_dots = false;
 	bool split_curve = false;
+	bool elevate = false;
 
 	std::vector<Vertex2> first_level;
 	std::vector<Vertex2> second_level;
@@ -84,7 +85,10 @@ protected:
 	std::vector<Vertex2> left_output;
 	std::vector<Vertex2> right_output;
 
+	std::vector<Vertex2> elevated_points;
+
 private: 
+	void myDraw(std::vector<Vertex2>&, bool, bool, bool);
 	float Bernstein(int, int, float);
 	int nChooseK(int, int);
 
@@ -94,5 +98,6 @@ private:
 	void BuildSplitTree();
 
 	void SplitCurve();
+	void ElevatePolinom();
 
 };

@@ -141,6 +141,40 @@ int CMyApp::nChooseK(int n, int k)
 	return result;
 }
 
+void CMyApp::myDraw(std::vector<Vertex2>& param, bool _point, bool linestrip, bool trinagle)
+{
+	// hozzunk létre egy új VBO erõforrás nevet
+	glBindVertexArray(m_vaoID);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+	glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
+		param.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
+		&param[0],	// errõl a rendszermemóriabeli címrõl olvasva
+		GL_STATIC_DRAW);
+
+	// shader bekapcsolasa
+	glUseProgram(m_programID);
+
+	// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
+	glBindVertexArray(m_vaoID);
+
+	// kirajzolás
+
+	if(_point)
+		glDrawArrays(GL_POINTS, 0, param.size());
+	if(linestrip)
+		glDrawArrays(GL_LINE_STRIP, 0, param.size());
+	if(trinagle)
+		glDrawArrays(GL_TRIANGLE_FAN, 0, control_points.size());
+
+	glEnable(GL_PROGRAM_POINT_SIZE);
+
+	// VAO kikapcsolasa
+	glBindVertexArray(0);
+
+	// shader kikapcsolasa
+	glUseProgram(0);
+}
+
 float CMyApp::Bernstein(int n, int i, float t)
 {
 	return nChooseK(n, i) * pow(t, i) * pow((1-t), (n-i));
@@ -170,7 +204,7 @@ void CMyApp::Collect()
 	}
 
 	glm::vec2 current = start;
-	polygon.emplace_back(Vertex2(start, glm::vec3(0,1,1)));
+	polygon.emplace_back(Vertex2(start, glm::vec3(0,0,0)));
 	while (true)
 	{
 		glm::vec2 next = control_points[0].pos;
@@ -196,7 +230,7 @@ void CMyApp::Collect()
 		if(next.x == start.x && next.y == start.y)
 			break;
 
-		polygon.emplace_back(Vertex2(current, glm::vec3(0,1,1)));
+		polygon.emplace_back(Vertex2(current, glm::vec3(0,0,0)));
 		current = next;
 	}
 }
@@ -285,6 +319,25 @@ void CMyApp::SplitCurve()
 	}
 }
 
+void CMyApp::ElevatePolinom()
+{
+	int size = control_points.size()+1;
+	elevated_points.clear();
+	elevated_points.emplace_back(control_points.at(0));
+
+	for (int i = 1; i < size-1; i++)
+	{
+		std::cout << i << std::endl;
+		elevated_points.emplace_back(
+			Vertex2(
+				glm::vec2( ((float)i / (float)size)  * control_points.at(i-1).pos 
+					+ (1 - ((float)i / (float)size)) * control_points.at(i).pos),
+				glm::vec3(0.2, 0.9, 0.5))
+		);
+	}
+	elevated_points.emplace_back(control_points.at(size-2));
+}
+
 
 
 void CMyApp::Render()
@@ -294,210 +347,33 @@ void CMyApp::Render()
 
 	if (control_points.size() > 0)
 	{
-		// hozzunk létre egy új VBO erõforrás nevet
-		glBindVertexArray(m_vaoID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-		glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-		control_points.size()*sizeof(Vertex2),		// ennyi bájt nagyságban
-		&control_points[0],	// errõl a rendszermemóriabeli címrõl olvasva
-		GL_STATIC_DRAW);
-
-		// shader bekapcsolasa
-		glUseProgram(m_programID);
-
-		// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-		glBindVertexArray(m_vaoID);
-
-		// kirajzolás
-		glDrawArrays(GL_POINTS, 0, control_points.size());
-		glDrawArrays(GL_LINE_STRIP, 0, control_points.size());
-		//glDrawArrays(GL_TRIANGLE_FAN, 0, control_points.size());
-		glEnable(GL_PROGRAM_POINT_SIZE);
-
-		// VAO kikapcsolasa
-		glBindVertexArray(0);
-
-		// shader kikapcsolasa
-		glUseProgram(0);
-
+		// BEZIER
+		myDraw(control_points, true, true, false);
+		
 		//OUTPUT KIRAJZOLASA
-
-		glBindVertexArray(m_vaoID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-		glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-			output.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-			&output[0],	// errõl a rendszermemóriabeli címrõl olvasva
-			GL_STATIC_DRAW);
-
-		// shader bekapcsolasa
-		glUseProgram(m_programID);
-
-		// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-		glBindVertexArray(m_vaoID);
-
-		// kirajzolás
-		if (draw_dots)
-		{
-			glDrawArrays(GL_POINTS, 0, output.size());
-		}
-		glDrawArrays(GL_LINE_STRIP, 0, output.size());
-		//glDrawArrays(GL_TRIANGLE_FAN, 0, control_points.size());
-
-
-		// VAO kikapcsolasa
-		glBindVertexArray(0);
-
-		// shader kikapcsolasa
-		glUseProgram(0);
-
-
-
+		myDraw(output, draw_dots, true, false);
 
 		// CONTROL POLYGON KIRAJZOLASA
 		if (draw_polygon)
-		{
-			if (poly_flag == 0)
-			{
-				poly_flag = 1;
-				Collect();
-				std::cout << "The size of the array is: " << polygon.size() << std::endl;
-
-				for (int i = 0; i < polygon.size(); i++)
-				{
-					std::cout << polygon[i].pos.x << ", " << polygon[i].pos.y << std::endl;
-				}
-
-			}
-			
-			glBindVertexArray(m_vaoID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-			glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-				polygon.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-				&polygon[0],	// errõl a rendszermemóriabeli címrõl olvasva
-				GL_STATIC_DRAW);
-
-			// shader bekapcsolasa
-			glUseProgram(m_programID);
-
-			// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-			glBindVertexArray(m_vaoID);
-
-			// kirajzolás
-			glDrawArrays(GL_POINTS, 0, polygon.size());
-			glDrawArrays(GL_LINE_STRIP, 0, polygon.size());
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, polygon.size());
-
-
-			// VAO kikapcsolasa
-			glBindVertexArray(0);
-
-			// shader kikapcsolasa
-			glUseProgram(0);
+		{	
+			myDraw(polygon, true, true, false);
 		}
-
-
-
-
-
 
 		// SPLIT KIRAJZOLASA
 		if (split_curve)
 		{
-
-			glBindVertexArray(m_vaoID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-			glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-				left_side.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-				&left_side[0],	// errõl a rendszermemóriabeli címrõl olvasva
-				GL_STATIC_DRAW);
-
-			// shader bekapcsolasa
-			glUseProgram(m_programID);
-
-			// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-			glBindVertexArray(m_vaoID);
-
-			// kirajzolás
-			glDrawArrays(GL_POINTS, 0, left_side.size());
-			glDrawArrays(GL_LINE_STRIP, 0, left_side.size());
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, polygon.size());
-
-			// VAO kikapcsolasa
-			glBindVertexArray(0);
-			// shader kikapcsolasa
-			glUseProgram(0);
-
-			glBindVertexArray(m_vaoID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-			glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-				right_side.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-				&right_side[0],	// errõl a rendszermemóriabeli címrõl olvasva
-				GL_STATIC_DRAW);
-
-			// shader bekapcsolasa
-			glUseProgram(m_programID);
-
-			// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-			glBindVertexArray(m_vaoID);
-
-			// kirajzolás
-			glDrawArrays(GL_POINTS, 0, right_side.size());
-			glDrawArrays(GL_LINE_STRIP, 0, right_side.size());
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, polygon.size());
-
-			// VAO kikapcsolasa
-			glBindVertexArray(0);
-			// shader kikapcsolasa
-			glUseProgram(0);
-
-			glBindVertexArray(m_vaoID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-			glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-				right_output.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-				&right_output[0],	// errõl a rendszermemóriabeli címrõl olvasva
-				GL_STATIC_DRAW);
-
-			// shader bekapcsolasa
-			glUseProgram(m_programID);
-
-			// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-			glBindVertexArray(m_vaoID);
-
-			// kirajzolás
-			glDrawArrays(GL_POINTS, 0, right_output.size());
-			glDrawArrays(GL_LINE_STRIP, 0, right_output.size());
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, polygon.size());
-
-			// VAO kikapcsolasa
-			glBindVertexArray(0);
-			// shader kikapcsolasa
-			glUseProgram(0);
-
-			glBindVertexArray(m_vaoID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-			glBufferData(GL_ARRAY_BUFFER,	// az aktív VBO-ba töltsünk adatokat
-				left_output.size() * sizeof(Vertex2),		// ennyi bájt nagyságban
-				&left_output[0],	// errõl a rendszermemóriabeli címrõl olvasva
-				GL_STATIC_DRAW);
-
-			// shader bekapcsolasa
-			glUseProgram(m_programID);
-
-			// kapcsoljuk be a VAO-t (a VBO jön vele együtt)
-			glBindVertexArray(m_vaoID);
-
-			// kirajzolás
-			glDrawArrays(GL_POINTS, 0, left_output.size());
-			glDrawArrays(GL_LINE_STRIP, 0, left_output.size());
-			//glDrawArrays(GL_TRIANGLE_STRIP, 0, polygon.size());
-
-			// VAO kikapcsolasa
-			glBindVertexArray(0);
-			// shader kikapcsolasa
-			glUseProgram(0);
-
+			myDraw(left_side, true, true, false);
+			myDraw(right_side, true, true, false);
+			myDraw(left_output, true, true, false);
+			myDraw(right_output, true, true, false);
 		}
 		
+
+		if (elevate)
+		{
+			myDraw(elevated_points, true, true, false);
+		}
+
 	}
 }
 
@@ -508,24 +384,21 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 		if (draw_polygon)
 		{
 			draw_polygon = false;
-			poly_flag = 0;
+			polygon.clear();
 		}
 		else
 		{
 			draw_polygon = true;
+			Collect();
 		}
 	}
 
 	if (key.keysym.sym == SDLK_RIGHT)
 	{
 		if (draw_dots)
-		{
 			draw_dots = false;
-		}
 		else
-		{
 			draw_dots = true;
-		}
 	}
 
 	if (key.keysym.sym == SDLK_LEFT)
@@ -535,8 +408,12 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 	}
 
 	if (key.keysym.sym == SDLK_s)
-	{
 		std::cout << "Size of the control points vector: " << control_points.size() << std::endl;
+
+	if (key.keysym.sym == SDLK_UP)
+	{
+		elevate = true;
+		ElevatePolinom();
 	}
 
 }

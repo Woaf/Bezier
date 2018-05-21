@@ -1,16 +1,15 @@
 ﻿  MyApp.cpp
 c:\users\bálint\desktop\02_shaders\02_shaders\glutils.hpp(22): warning C4474: 'fprintf' : too many arguments passed for format string
   c:\users\bálint\desktop\02_shaders\02_shaders\glutils.hpp(22): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(164): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(177): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(206): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(212): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(218): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(224): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(230): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(266): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(280): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(368): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(570): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(198): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(211): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(240): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(246): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(252): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(258): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(264): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(299): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(311): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(444): warning C4018: '<': signed/unsigned mismatch
   02_Shaders.vcxproj -> C:\Users\Bálint\Desktop\02_Shaders\Debug\02_Shaders.exe
   02_Shaders.vcxproj -> C:\Users\Bálint\Desktop\02_Shaders\Debug\02_Shaders.pdb (Full PDB)
