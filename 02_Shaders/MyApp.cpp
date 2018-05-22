@@ -221,7 +221,7 @@ void CMyApp::Collect()
 				next = control_points[i].pos;
 				colinear.clear();
 			}
-			else if (abs(val) < 0.005)
+			else if (abs(val) < 0.0005)
 			{
 				next = control_points[i].pos;
 			}
@@ -237,62 +237,44 @@ void CMyApp::Collect()
 
 void CMyApp::BuildSplitTree()
 {
-	for (int i = 0; i < control_points.size()-1; i++)
-	{
-		first_level.emplace_back(Vertex2(glm::vec2((control_points[i].pos + control_points[i + 1].pos) / 2.0f),
-			glm::vec3(1, 0, 1)));
-	}
+	pyramid.push_back(control_points);
 
-	for (int i = 0; i < first_level.size()-1; i++)
+	for (int i = control_points.size() - 1; i >= 1; i--)
 	{
-		second_level.emplace_back(Vertex2(glm::vec2((first_level[i].pos + first_level[i + 1].pos) / 2.0f),
-			glm::vec3(1, 0, 1)));
+		int h = control_points.size() - i - 1;
+		std::vector<Vertex2> temp;
+		for (int j = 0; j < i; j++)
+		{
+			temp.emplace_back(
+				Vertex2(
+					glm::vec2((pyramid[h][j].pos + pyramid[h][j + 1].pos) / 2.0f),
+					glm::vec3(1, 0, 1)
+				)
+			);
+		}
+		pyramid.push_back(temp);
 	}
-
-	for (int i = 0; i < second_level.size()-1; i++)
-	{
-		third_level.emplace_back(Vertex2(glm::vec2((second_level[i].pos + second_level[i + 1].pos) / 2.0f),
-			glm::vec3(1, 0, 1)));
-	}
-
-	for (int i = 0; i < third_level.size()-1; i++)
-	{
-		fourth_level.emplace_back(Vertex2(glm::vec2((third_level[i].pos + third_level[i + 1].pos) / 2.0f),
-			glm::vec3(1, 0, 1)));
-	}
-
-	for (int i = 0; i < fourth_level.size()-1; i++)
-	{
-		fifth_level.emplace_back(Vertex2(glm::vec2((fourth_level[i].pos + fourth_level[i + 1].pos) / 2.0f),
-			glm::vec3(1, 0, 1)));
-	}
-
 }
 
 void CMyApp::SplitCurve()
 {
-	if ((control_points.size() % 2) == 0 &&
-		control_points.size() >= 4)
-	{
+	
 		BuildSplitTree();
 
-		left_side.emplace_back(control_points[0]);
-		left_side.emplace_back(first_level.at(0));
-		left_side.emplace_back(second_level.at(0));
-		left_side.emplace_back(third_level.at(0));
-		left_side.emplace_back(fourth_level.at(0));
-		left_side.emplace_back(fifth_level.at(0));
+		left_side.emplace_back(pyramid[0][0]);
+		for (int i = 0; i < pyramid.size(); i++)
+		{
+			left_side.emplace_back(pyramid[i][0]);
+		}
 
+		for (int i = pyramid.size()-1; i >= 0; i--)
+		{
+			right_side.emplace_back(pyramid[i][pyramid[i].size()-1]);
+		}
+		right_side.emplace_back(control_points.at(control_points.size() - 1));
 
-		right_side.emplace_back(fifth_level.at(0));
-		right_side.emplace_back(fourth_level.at(1));
-		right_side.emplace_back(third_level.at(2));
-		right_side.emplace_back(second_level.at(3));
-		right_side.emplace_back(first_level.at(4));
-		right_side.emplace_back(control_points[5]);
 
 		left_output.clear();
-
 		for (int h = 1; h <= divisor; h++)
 		{
 			Vertex2 temp(glm::vec2(0), glm::vec3(0, 1, 0));
@@ -315,8 +297,9 @@ void CMyApp::SplitCurve()
 			}
 			right_output.emplace_back(temp);
 		}
+		/*
+		*/
 
-	}
 }
 
 void CMyApp::ElevatePolinom()
@@ -332,7 +315,7 @@ void CMyApp::ElevatePolinom()
 			Vertex2(
 				glm::vec2( ((float)i / (float)size)  * control_points.at(i-1).pos 
 					+ (1 - ((float)i / (float)size)) * control_points.at(i).pos),
-				glm::vec3(0.2, 0.9, 0.5))
+				glm::vec3(0.4, 0.7, 0.5))
 		);
 	}
 	elevated_points.emplace_back(control_points.at(size-2));
@@ -368,12 +351,10 @@ void CMyApp::Render()
 			myDraw(right_output, true, true, false);
 		}
 		
-
 		if (elevate)
 		{
 			myDraw(elevated_points, true, true, false);
 		}
-
 	}
 }
 
@@ -403,8 +384,22 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 
 	if (key.keysym.sym == SDLK_LEFT)
 	{
-		split_curve = true;
-		SplitCurve();
+		if (split_curve)
+		{
+			split_curve = false;
+			left_output.clear();
+			left_side.clear();
+			right_output.clear();
+			right_side.clear();
+
+			pyramid.clear();
+		}
+		else
+		{
+			split_curve = true;
+			SplitCurve();
+		}
+		
 	}
 
 	if (key.keysym.sym == SDLK_s)
@@ -412,10 +407,18 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 
 	if (key.keysym.sym == SDLK_UP)
 	{
-		elevate = true;
-		ElevatePolinom();
-	}
+		if (elevate)
+		{
+			elevate = false;
+		}
+		else
+		{
+			elevated_points.clear();
+			elevate = true;
+			ElevatePolinom();
 
+		}
+	}
 }
 
 void CMyApp::KeyboardUp(SDL_KeyboardEvent& key)

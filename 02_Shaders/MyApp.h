@@ -80,6 +80,8 @@ protected:
 	std::vector<Vertex2> fourth_level;
 	std::vector<Vertex2> fifth_level;
 
+	std::vector<std::vector<Vertex2>> pyramid;
+
 	std::vector<Vertex2> left_side;
 	std::vector<Vertex2> right_side;
 	std::vector<Vertex2> left_output;
