@@ -67,6 +67,9 @@ bool CMyApp::Init()
 	glBindVertexArray(0); // feltöltüttük a VAO-t, kapcsoljuk le
 	glBindBuffer(GL_ARRAY_BUFFER, 0); // feltöltöttük a VBO-t is, ezt is vegyük le
 
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glLineWidth(3);
+
 	//
 	// shaderek betöltése
 	//
@@ -165,8 +168,6 @@ void CMyApp::myDraw(std::vector<Vertex2>& param, bool _point, bool linestrip, bo
 		glDrawArrays(GL_LINE_STRIP, 0, param.size());
 	if(trinagle)
 		glDrawArrays(GL_TRIANGLE_FAN, 0, control_points.size());
-
-	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	// VAO kikapcsolasa
 	glBindVertexArray(0);
@@ -304,21 +305,81 @@ void CMyApp::SplitCurve()
 
 void CMyApp::ElevatePolinom()
 {
-	int size = control_points.size()+1;
+	float size = control_points.size()+1;
 	elevated_points.clear();
 	elevated_points.emplace_back(control_points.at(0));
 
 	for (int i = 1; i < size-1; i++)
 	{
-		std::cout << i << std::endl;
 		elevated_points.emplace_back(
 			Vertex2(
-				glm::vec2( ((float)i / (float)size)  * control_points.at(i-1).pos 
-					+ (1 - ((float)i / (float)size)) * control_points.at(i).pos),
+				glm::vec2( ((float)i / (float)size))  * control_points.at(i-1).pos 
+					+ (1 - ((float)i / (float)size)) * control_points.at(i).pos,
 				glm::vec3(0.4, 0.7, 0.5))
 		);
 	}
 	elevated_points.emplace_back(control_points.at(size-2));
+}
+
+void CMyApp::ReducePolinom()
+{
+	float n = control_points.size()-1;
+
+	reduced_points_forward.push_back(control_points.at(0));
+	for (int i = 1; i < n-1; i++)
+	{
+		reduced_points_forward.push_back(Vertex2(
+			glm::vec2((n / (n-i)) * control_points.at(i).pos
+				- ((float)i / (n-i)) * reduced_points_forward.at(i-1).pos),
+			glm::vec3(0, 0, 0)
+		));
+	}
+	reduced_points_forward.push_back(control_points.at(n));
+
+	reduced_points_barckward.push_back(control_points.at(n));
+	for (int i = n; i > 1; i--)
+	{
+		reduced_points_barckward.push_back(Vertex2(
+			glm::vec2((n / (float)i) * control_points.at(i).pos
+				- ((n-i) / (float)i) * reduced_points_barckward.at(n-i).pos),
+			glm::vec3(0, 0, 0)
+		));
+	}
+	reduced_points_barckward.push_back(control_points.at(0));
+
+	/*
+	*/
+
+	std::reverse(reduced_points_barckward.begin(), reduced_points_barckward.end());
+
+
+	int s_ize = reduced_points_forward.size();
+	for (int i = 0; i < s_ize; i++)
+	{
+		std::cout << reduced_points_forward[i].pos.x << ", " << reduced_points_barckward[i].pos.x << std::endl;
+	}
+
+	reduced_points_combined.push_back(control_points[0]);
+	for (int i = 1; i < s_ize-1; i++)
+	{
+		reduced_points_combined.push_back(Vertex2(
+			(reduced_points_forward[i].pos + reduced_points_barckward[i].pos) / 2.0f,
+			glm::vec3(0, 0, 0)));
+	}
+	reduced_points_combined.push_back(control_points[s_ize]);
+
+	reduced_bezier.clear();
+	for (int h = 1; h <= divisor; h++)
+	{
+		Vertex2 temp(glm::vec2(0), glm::vec3(1, 1, 0));
+		for (int p = 0; p < reduced_points_combined.size(); p++)
+		{
+			temp.pos += glm::vec2(
+				Bernstein(reduced_points_combined.size()-1, p, (float)h / (float)divisor) * reduced_points_combined.at(p).pos);
+		}
+		reduced_bezier.emplace_back(temp);
+	}
+
 }
 
 
@@ -355,6 +416,15 @@ void CMyApp::Render()
 		{
 			myDraw(elevated_points, true, true, false);
 		}
+
+		if (reduce)
+		{
+			myDraw(reduced_points_forward, true, true, false);
+			myDraw(reduced_points_barckward, true, true, false);
+			myDraw(reduced_points_combined, true, true, false);
+			myDraw(reduced_bezier, false, true, false);
+		}
+
 	}
 }
 
@@ -402,9 +472,6 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 		
 	}
 
-	if (key.keysym.sym == SDLK_s)
-		std::cout << "Size of the control points vector: " << control_points.size() << std::endl;
-
 	if (key.keysym.sym == SDLK_UP)
 	{
 		if (elevate)
@@ -417,6 +484,22 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 			elevate = true;
 			ElevatePolinom();
 
+		}
+	}
+
+	if (key.keysym.sym == SDLK_DOWN)
+	{
+		if (reduce)
+		{
+			reduce = false;
+		}
+		else
+		{
+			reduced_points_forward.clear();
+			reduced_points_barckward.clear();
+			reduced_points_combined.clear();
+			reduce = true;
+			ReducePolinom();
 		}
 	}
 }

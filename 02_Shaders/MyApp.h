@@ -10,6 +10,7 @@
 // GLM
 #include <glm/glm.hpp>
 #include <vector>
+#include <algorithm>
 
 #include <imgui\imgui.h>
 #include <imgui\imgui_impl_sdl_gl3.h>
@@ -73,12 +74,7 @@ protected:
 	bool draw_dots = false;
 	bool split_curve = false;
 	bool elevate = false;
-
-	std::vector<Vertex2> first_level;
-	std::vector<Vertex2> second_level;
-	std::vector<Vertex2> third_level;
-	std::vector<Vertex2> fourth_level;
-	std::vector<Vertex2> fifth_level;
+	bool reduce = false;
 
 	std::vector<std::vector<Vertex2>> pyramid;
 
@@ -88,6 +84,11 @@ protected:
 	std::vector<Vertex2> right_output;
 
 	std::vector<Vertex2> elevated_points;
+
+	std::vector<Vertex2> reduced_points_forward;
+	std::vector<Vertex2> reduced_points_barckward;
+	std::vector<Vertex2> reduced_points_combined;
+	std::vector<Vertex2> reduced_bezier;
 
 private: 
 	void myDraw(std::vector<Vertex2>&, bool, bool, bool);
@@ -101,5 +102,6 @@ private:
 
 	void SplitCurve();
 	void ElevatePolinom();
+	void ReducePolinom();
 
 };

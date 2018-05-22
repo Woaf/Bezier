@@ -1,11 +1,19 @@
 ﻿  MyApp.cpp
 c:\users\bálint\desktop\02_shaders\02_shaders\glutils.hpp(22): warning C4474: 'fprintf' : too many arguments passed for format string
   c:\users\bálint\desktop\02_shaders\02_shaders\glutils.hpp(22): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(198): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(211): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(265): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(281): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(293): warning C4018: '<': signed/unsigned mismatch
-c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(447): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(199): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(212): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(266): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(282): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(294): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(308): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(321): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(326): warning C4244: 'initializing': conversion from 'unsigned int' to 'float', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(337): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(339): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(340): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(344): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(375): warning C4018: '<': signed/unsigned mismatch
+c:\users\bálint\desktop\02_shaders\02_shaders\myapp.cpp(530): warning C4018: '<': signed/unsigned mismatch
   02_Shaders.vcxproj -> C:\Users\Bálint\Desktop\02_Shaders\Debug\02_Shaders.exe
   02_Shaders.vcxproj -> C:\Users\Bálint\Desktop\02_Shaders\Debug\02_Shaders.pdb (Full PDB)
