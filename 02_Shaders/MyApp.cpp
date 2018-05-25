@@ -354,10 +354,6 @@ void CMyApp::ReducePolinom()
 
 
 	int s_ize = reduced_points_forward.size();
-	for (int i = 0; i < s_ize; i++)
-	{
-		std::cout << reduced_points_forward[i].pos.x << ", " << reduced_points_barckward[i].pos.x << std::endl;
-	}
 
 	reduced_points_combined.push_back(control_points[0]);
 	for (int i = 1; i < s_ize-1; i++)
@@ -501,6 +497,33 @@ void CMyApp::KeyboardDown(SDL_KeyboardEvent& key)
 			reduce = true;
 			ReducePolinom();
 		}
+	}
+
+	if (key.keysym.sym == SDLK_r)
+	{
+		control_points.clear(); // stores the points of the control points
+		output.clear(); // stores the points of the original bezier curve
+		polygon.clear(); // stores the points of the control polygon
+
+		draw_polygon = false;
+		draw_dots = false;
+		split_curve = false;
+		elevate = false;
+		reduce = false;
+
+		pyramid.clear();
+
+		left_side.clear();
+		right_side.clear();
+		left_output.clear();
+		right_output.clear();
+
+		elevated_points.clear();
+
+		reduced_points_forward.clear();
+		reduced_points_barckward.clear();
+		reduced_points_combined.clear();
+		reduced_bezier.clear();
 	}
 }
 

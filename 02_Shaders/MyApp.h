@@ -66,10 +66,6 @@ protected:
 	std::vector<Vertex2> output; // stores the points of the original bezier curve
 	std::vector<Vertex2> polygon; // stores the points of the control polygon
 
-	std::vector<Vertex2> div1;
-	std::vector<Vertex2> div2;
-
-	int poly_flag = 0;
 	bool draw_polygon = false;
 	bool draw_dots = false;
 	bool split_curve = false;
